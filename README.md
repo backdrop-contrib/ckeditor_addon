@@ -11,3 +11,7 @@ This project
  - Adds
  . The save button !
  . Codemirror and Codesnippet plugins
+
+Hopefully, the bugs will be fixed in Backdrop 1.4, but this project aims to stay as a template for customizing CKEditor integration.
+
+There is no UI, just regular Backdrop hooks.
