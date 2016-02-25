@@ -127,14 +127,6 @@ function ckeditor_addon_ckeditor_plugins_alter(&$plugins) {
  */
 function ckeditor_addon_ckeditor_plugins() {
   $path = backdrop_get_path('module', 'ckeditor_addon') . '/js/plugins/';
-  $plugins['codemirror'] = array(
-    'name' => 'codemirror',
-    'desc' => t('Code Mirror Plugin'),
-    'path' =>  $path . 'codemirror',
-    'buttons' => array(),
-    'file' => 'plugin.js',
-    'enabled callback' => TRUE,
-  );
   $plugins['autogrowcustom'] = array(
     'name' => 'autogrowcustom',
     'desc' => t('autogrowcustom Plugin'),
