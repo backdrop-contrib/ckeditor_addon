@@ -5,9 +5,11 @@ Backdrop 1.2 has jailed CKEditor in core, with critical bugs, reduced functional
 
 # Upgrade
 Upgrade to a custom built CKEditr 4.5.5
+
 # Fixes
 - Add a link to an image
 - Restore Anchor functionality
+
 # Adds
 - The save button !
 - A backdrop compliant implementation of the CKEditor uploadimage plugin, for direct upload
