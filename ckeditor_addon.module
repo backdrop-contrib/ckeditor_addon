@@ -66,7 +66,6 @@ function ckeditor_addon_ckeditor_plugins_alter(&$plugins) {
   );
 
   // Added.
-  $image_prefix = backdrop_get_path('module', 'ckeditor_addon') . '/images/buttons/';
 
   // The backdropuploadimage plugin provides backdrop compliant uploadimage functionality.
   $plugins['backdropuploadimage'] = array(
@@ -78,6 +77,7 @@ function ckeditor_addon_ckeditor_plugins_alter(&$plugins) {
 
   // Specify toolbar buttons.
 
+  $image_prefix = backdrop_get_path('module', 'ckeditor') . '/images/buttons/';
   $plugins['default']['buttons']['Link'] = array(
     'label' => t('Link'),
     'required_html' => array(array(
