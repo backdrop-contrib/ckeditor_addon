@@ -1,0 +1,4 @@
+name = CKEditor Addon
+description = Freedom, fixes, and enhancements for CKEditor
+backdrop = 1.x
+type = module

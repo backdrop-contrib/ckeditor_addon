@@ -1,0 +1,442 @@
+<?php
+
+/**
+ * Implements hook_library_alter().
+ *
+ * Make use of custom build.
+ */
+function ckeditor_addon_library_info_alter(&$libraries, $module) {
+  if ($module == 'ckeditor') {
+    unset ($libraries['ckeditor']);
+    $libraries['ckeditor'] = array(
+      'title' => 'Loads the main CKEditor library.',
+      'version' => '4.5.5',
+      'js' => array(
+        backdrop_get_path('module', 'ckeditor_addon') . '/js/ckeditor/ckeditor.js' => array('preprocess' => FALSE, 'group' => JS_LIBRARY),
+      ),
+    );
+  }
+}
+
+/**
+ * Implements hook_ckeditor_plugins_alter().
+ */
+function ckeditor_addon_ckeditor_plugins_alter(&$plugins) {
+  // Removed.
+    unset($plugins['backdroplink']);
+
+  // Replaced.
+  $path = backdrop_get_path('module', 'ckeditor_addon');
+  $image_prefix = backdrop_get_path('module', 'ckeditor') . '/images/buttons/';
+
+  // The backdropimage plugin replaces normal image functionality.
+  $plugins['backdropimage'] = array(
+    'path' => $path . '/js/plugins/backdropimage',
+    'file' => 'plugin.js',
+    'buttons' => array(
+      'BackdropImage' => array(
+        'label' => t('Image'),
+        'required_html' => array(
+          array(
+            'tags' => array('img'),
+            'attributes' => array('src', 'alt', 'data-file-id', 'data-align'),
+          ),
+        ),
+        'image' => $image_prefix . 'image.png',
+      ),
+    ),
+  );
+
+  // The backdropcaption plugin provides consistent behaviors for image captions.
+  $plugins['backdropimagecaption'] = array(
+    'path' => $path . '/js/plugins/backdropimagecaption',
+    'file' => 'plugin.js',
+    'css' => array(backdrop_get_path('module', 'ckeditor') . '/css/ckeditor-caption.css'),
+    'enabled callback' => 'ckeditor_image_plugin_check',
+    'required_html' => array(
+      array(
+        'tags' => array('img'),
+        'attributes' => array('data-caption'),
+      ),
+      array(
+        'tags' => array('figure', 'figcaption'),
+        'attributes' => array('src', 'alt', 'class', 'data-placeholder'),
+      ),
+    )
+  );
+
+  // Added.
+  $image_prefix = backdrop_get_path('module', 'ckeditor_addon') . '/images/buttons/';
+
+  // The backdropuploadimage plugin provides backdrop compliant uploadimage functionality.
+  $plugins['backdropuploadimage'] = array(
+    'path' =>  $path . '/js/plugins/backdropuploadimage',
+    'buttons' => array(),
+    'enabled callback' => TRUE,
+    'file' => 'plugin.js',
+  );
+
+  // Specify toolbar buttons.
+
+  $plugins['default']['buttons']['Link'] = array(
+    'label' => t('Link'),
+    'required_html' => array(array(
+      'tags' => array('a'),
+      'attributes' => array('href'),
+    )),
+    'image' => $image_prefix . 'link.png',
+  );
+  $plugins['default']['buttons']['Unlink'] = array(
+    'label' => t('Unlink'),
+    'required_html' => array(array(
+      'tags' => array('a'),
+      'attributes' => array('href'),
+    )),
+    'image' => $image_prefix . 'unlink.png',
+  );
+  $plugins['default']['buttons']['Anchor'] = array(
+    'image' => $image_prefix . 'anchor.png',
+    'image_rtl' => $image_prefix . 'anchor-rtl.png',
+    'label' => t('Anchor'),
+    'required_html' => array(array(
+      'tags' => array('a'),
+      'attributes' => array(
+        'href',
+        'title',
+        'name',
+      //'id',
+        ),
+    )),
+  );
+
+  $image_prefix = backdrop_get_path('module', 'ckeditor_addon') . '/images/buttons/';
+  $plugins['default']['buttons'] += array(
+    'CodeSnippet' => array(
+      'label' => t('Code Snippet'),
+      'image' => $image_prefix . 'codesnippet.png',
+    ),
+    'Save' => array(
+      'label' => t('Save document'),
+      'image' => $image_prefix . 'save.png',
+    ),
+  );
+}
+
+/**
+ * Implements hook_ckeditor_plugin().
+ */
+function ckeditor_addon_ckeditor_plugins() {
+  $path = backdrop_get_path('module', 'ckeditor_addon') . '/js/plugins/';
+  $plugins['codemirror'] = array(
+    'name' => 'codemirror',
+    'desc' => t('Code Mirror Plugin'),
+    'path' =>  $path . 'codemirror',
+    'buttons' => array(),
+    'file' => 'plugin.js',
+    'enabled callback' => TRUE,
+  );
+  $plugins['autogrowcustom'] = array(
+    'name' => 'autogrowcustom',
+    'desc' => t('autogrowcustom Plugin'),
+    'path' =>  $path . 'autogrowcustom',
+    'buttons' => array(),
+    'file' => 'plugin.js',
+    'enabled callback' => TRUE,
+  );
+  if (module_exists('imce')) {
+    $plugins['imce'] = array(
+      'name' => 'imce',
+      'desc' => t('Plugin for inserting files from IMCE without image dialog'),
+      'path' =>  $path . 'imce',
+      'buttons' => array(
+        'IMCE' => array(
+          'label' => 'IMCE',
+          'image' => $path . 'imce/images/icon.png',
+        ),
+      ),
+      'file' => 'plugin.js',
+      'enabled callback' => TRUE,
+    );
+  }
+  return $plugins;
+}
+
+/**
+ * Implementation of hook_init().
+ * add js & css for codesnippet out of CKEditor pages
+ */
+function ckeditor_addon_init() {
+  $path = backdrop_get_path('module', 'ckeditor_addon') . '/js/ckeditor/plugins/codesnippet/lib/highlight/';
+  drupal_add_js($path . 'highlight.pack.js', array('type' => 'file', 'scope' => 'footer'));
+  $inline_js = "hljs.initHighlightingOnLoad();";
+  drupal_add_js($inline_js, array('type' => 'inline', 'scope' => 'footer'));
+  drupal_add_css($path . 'styles/github.css', array(
+    'group' => CSS_THEME, 
+    'weight' => 142, 
+    'every_page' => FALSE,
+  ));
+}
+
+/**
+ * Implements hook_ckeditor_settings_alter().
+ *
+ * Once was "Advanced options."
+ */
+function ckeditor_addon_ckeditor_settings_alter(&$config, $format) {
+  $config['codeSnippet_theme'] = 'Github';
+  $config['format_tags'] = 'p;h2;h3;h4;h5;h6;pre;address;div';
+	$config['specialChars'] = array(
+		'&amp;',       
+		'&gt;',        
+		'&lt;',        
+		'&quot;',      
+		'&acute;',     
+		'&cedil;',     
+		'&circ;',      
+		'&macr;',      
+		'&middot;',    
+		'&tilde;',     
+		'&uml;',       
+		'&Aacute;',    
+		'&aacute;',    
+		'&Acirc;',     
+		'&acirc;',     
+		'&AElig;',     
+		'&aelig;',     
+		'&Agrave;',    
+		'&agrave;',    
+		'&Aring;',     
+		'&aring;',     
+		'&Atilde;',    
+		'&atilde;',    
+		'&Auml;',      
+		'&auml;',      
+		'&Ccedil;',    
+		'&ccedil;',    
+		'&Eacute;',    
+		'&eacute;',    
+		'&Ecirc;',     
+		'&ecirc;',     
+		'&Egrave;',    
+		'&egrave;',    
+		'&ETH;',       
+		'&eth;',       
+		'&Euml;',      
+		'&euml;',      
+		'&Iacute;',    
+		'&iacute;',    
+		'&Icirc;',     
+		'&icirc;',     
+		'&Igrave;',    
+		'&igrave;',    
+		'&Iuml;',      
+		'&iuml;',      
+		'&Ntilde;',    
+		'&ntilde;',    
+		'&Oacute;',    
+		'&oacute;',    
+		'&Ocirc;',     
+		'&ocirc;',     
+		'&OElig;',     
+		'&oelig;',     
+		'&Ograve;',    
+		'&ograve;',    
+		'&Oslash;',    
+		'&oslash;',    
+		'&Otilde;',    
+		'&otilde;',    
+		'&Ouml;',      
+		'&ouml;',      
+		'&Scaron;',    
+		'&scaron;',    
+		'&szlig;',     
+		'&THORN;',     
+		'&thorn;',     
+		'&Uacute;',    
+		'&uacute;',    
+		'&Ucirc;',     
+		'&ucirc;',     
+		'&Ugrave;',    
+		'&ugrave;',    
+		'&Uuml;',      
+		'&uuml;',      
+		'&Yacute;',    
+		'&yacute;',    
+		'&yuml;',      
+		'&Yuml;',      
+		'&cent;',      
+		'&curren;',    
+		'&euro;',      
+		'&pound;',     
+		'&yen;',       
+		'&brvbar;',    
+		'&bull;',      
+		'&copy;',      
+		'&dagger;',    
+		'&Dagger;',    
+		'&frasl;',     
+		'&hellip;',    
+		'&iexcl;',     
+		'&image;',     
+		'&iquest;',    
+		'&lrm;',       
+		'&mdash;',     
+		'&ndash;',     
+		'&not;',       
+		'&oline;',     
+		'&ordf;',      
+		'&ordm;',      
+		'&para;',      
+		'&permil;',    
+		'&prime;',     
+		'&Prime;',     
+		'&real;',      
+		'&reg;',       
+		'&rlm;',       
+		'&sect;',      
+		'&shy;',       
+		'&sup1;',      
+		'&trade;',     
+		'&weierp;',    
+		'&bdquo;',     
+		'&laquo;',     
+		'&ldquo;',     
+		'&lsaquo;',    
+		'&lsquo;',     
+		'&raquo;',     
+		'&rdquo;',     
+		'&rsaquo;',    
+		'&rsquo;',     
+		'&sbquo;',     
+		'&emsp;',      
+		'&ensp;',      
+		'&nbsp;',      
+		'&thinsp;',    
+		'&#x202F;',    
+		'&zwj;',       
+		'&zwnj;',      
+		'&deg;',       
+		'&divide;',    
+		'&frac12;',    
+		'&frac14;',    
+		'&frac34;',    
+		'&ge;',        
+		'&le;',        
+		'&minus;',     
+		'&sup2;',      
+		'&sup3;',      
+		'&times;',     
+		'&and;',       
+		'&ang;',       
+		'&asymp;',     
+		'&cap;',       
+		'&cong;',      
+		'&cup;',       
+		'&empty;',     
+		'&equiv;',     
+		'&exist;',     
+		'&fnof;',      
+		'&forall;',    
+		'&infin;',     
+		'&int;',       
+		'&isin;',      
+		'&lang;',      
+		'&lceil;',     
+		'&lfloor;',    
+		'&lowast;',    
+		'&micro;',     
+		'&nabla;',     
+		'&ne;',        
+		'&ni;',        
+		'&notin;',     
+		'&nsub;',      
+		'&oplus;',     
+		'&or;',        
+		'&otimes;',    
+		'&part;',      
+		'&perp;',      
+		'&plusmn;',    
+		'&prod;',      
+		'&prop;',      
+		'&radic;',     
+		'&rang;',      
+		'&rceil;',     
+		'&rfloor;',    
+		'&sdot;',      
+		'&sim;',       
+		'&sub;',       
+		'&sube;',      
+		'&sum;',       
+		'&sup;',       
+		'&supe;',      
+		'&there4;',    
+		'&Alpha;',     
+		'&Beta;',      
+		'&Chi;',       
+		'&Delta;',     
+		'&Epsilon;',   
+		'&Eta;',       
+		'&Gamma;',     
+		'&Iota;',      
+		'&Kappa;',     
+		'&Lambda;',    
+		'&Mu;',        
+		'&Nu;',        
+		'&Omega;',     
+		'&Omicron;',   
+		'&Phi;',       
+		'&Pi;',        
+		'&Psi;',       
+		'&Rho;',       
+		'&Sigma;',     
+		'&Tau;',       
+		'&Theta;',     
+		'&Upsilon;',   
+		'&Xi;',        
+		'&Zeta;',      
+		'&alpha;',     
+		'&beta;',      
+		'&chi;',       
+		'&delta;',     
+		'&epsilon;',   
+		'&eta;',       
+		'&gamma;',     
+		'&iota;',      
+		'&kappa;',     
+		'&lambda;',    
+		'&mu;',        
+		'&nu;',        
+		'&omega;',     
+		'&omicron;',   
+		'&phi;',       
+		'&pi;',        
+		'&piv;',       
+		'&psi;',       
+		'&rho;',       
+		'&sigma;',     
+		'&sigmaf;',    
+		'&tau;',       
+		'&theta;',     
+		'&thetasym;',  
+		'&upsih;',     
+		'&upsilon;',   
+		'&xi;',        
+		'&zeta;',      
+		'&crarr;',     
+		'&darr;',      
+		'&dArr;',      
+		'&harr;',      
+		'&hArr;',      
+		'&larr;',      
+		'&lArr;',      
+		'&rarr;',      
+		'&rArr;',      
+		'&uarr;',      
+		'&uArr;',      
+		'&clubs;',     
+		'&diams;',     
+		'&hearts;',    
+		'&spades;',    
+		'&loz;'        
+	);
+}
