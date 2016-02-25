@@ -162,6 +162,22 @@ function ckeditor_addon_ckeditor_plugins() {
 }
 
 /**
+ * Implements hook_menu().
+ */
+function ckeditor_addon_menu() {
+  $items['filter/uploadimage/%/%'] = array(
+    'page callback' => 'filter_upload_image',
+    'page arguments' => array(2, 3),
+  //'access arguments' => array('use direct upload'), // ?
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'ckeditor_addon.pages.inc',
+  );
+
+  return $items;
+}
+
+/**
  * Implementation of hook_init().
  * add js & css for codesnippet out of CKEditor pages
  */
