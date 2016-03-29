@@ -65,14 +65,17 @@
         // modify it, and pass it to a new CKEDITOR.style instance.
         var requiredContent = widgetDefinition.requiredContent.getDefinition();
         requiredContent.attributes['data-file-id'] = '';
+        requiredContent.attributes['data-style'] = '';
         widgetDefinition.requiredContent = new CKEDITOR.style(requiredContent);
         widgetDefinition.allowedContent.img.attributes['!data-file-id'] = true;
+        widgetDefinition.allowedContent.img.attributes['!data-style'] = true;
 
         // Override downcast(): since we only accept <img> in our upcast method,
         // the element is already correct. We only need to update the element's
         // data-file-id attribute.
         widgetDefinition.downcast = function (element) {
           element.attributes['data-file-id'] = this.data['data-file-id'];
+          element.attributes['data-style'] = this.data['data-style'];
 console.log('downcast ' + this.data['data-file-id']);
         };
 
@@ -90,6 +93,7 @@ console.log('downcast ' + this.data['data-file-id']);
 
           // Parse the data-file-id attribute.
           data['data-file-id'] = element.attributes['data-file-id'];
+          data['data-style'] = element.attributes['data-style'];
 console.log('upcast ' + data['data-file-id']);
           return element;
         };
@@ -128,7 +132,8 @@ console.log('upcast ' + data['data-file-id']);
           'alt': 'alt',
           'width': 'width',
           'height': 'height',
-          'data-file-id': 'data-file-id'
+          'data-file-id': 'data-file-id',
+          'data-style': 'data-style'
         };
 
         // Protected; transforms widget's data object to the format used by the
@@ -240,8 +245,8 @@ console.log('upcast ' + data['data-file-id']);
       // Register the "editbackdropimage" command, which essentially just replaces
       // the "image" command's CKEditor dialog with a Backdrop-native dialog.
       editor.addCommand('editbackdropimage', {
-        allowedContent: 'img[alt,!src,width,height,!data-file-id]',
-        requiredContent: 'img[alt,src,width,height,data-file-id]',
+        allowedContent: 'img[alt,!src,width,height,!data-file-id,!data-style]',
+        requiredContent: 'img[alt,src,width,height,data-file-id,data-style]',
         modes: {wysiwyg: 1},
         canUndo: true,
         exec: function (editor, data) {

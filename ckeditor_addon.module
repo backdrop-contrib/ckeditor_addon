@@ -170,19 +170,92 @@ function ckeditor_addon_menu() {
 }
 
 /**
- * Implementation of hook_init().
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ckeditor_addon_form_filter_format_editor_image_form_alter(&$form, $form_state) {
+  $format = $form_state['format'];
+  if ($format->editor !== 'ckeditor') {
+    return;
+  }
+  $values = array();
+  if (isset($form_state['input']['editor_object'])) {
+    $values = $form_state['input']['editor_object'];
+  }
+  $form['style'] = array(
+    '#title' => t('Style'),
+    '#type' => 'radios',
+    '#default_value' => isset($values['data-style']) ? $values['data-style'] : 'none',
+    '#options' => array(
+      'none' => t('Original'),
+      'large' => t('Large'),
+      'medium' => t('Medium'),
+      'thumbnail' => t('Thumbnail'),
+    ),
+    '#wrapper_attributes' => array('class' => array('editor-image-style')),
+    '#parents' => array('attributes', 'data-style'),
+  );
+  // Override filter_format_editor_dialog_save().
+  $form['actions']['submit']['#ajax']['callback'] = 'ckeditor_addon_format_editor_dialog_save';
+}
+
+/**
+ * Override filter_format_editor_dialog_save().
+ */
+function ckeditor_addon_format_editor_dialog_save($form, &$form_state) {
+  $return = filter_format_editor_dialog_save($form, $form_state);
+  if (isset($return['#commands'][0]['values']['attributes']['data-file-id'])) {
+    $fid = $return['#commands'][0]['values']['attributes']['data-file-id'];
+    $style_name = $return['#commands'][0]['values']['attributes']['data-style'];
+
+    $file = file_load($fid);
+    if ($style_name == 'none') {
+      $path = file_create_url($file->uri);
+    }
+    else {
+      $path = image_style_url($style_name, $file->uri);
+    }
+    if ($return['#commands'][0]['values']['attributes']['src'] != $path) {
+      $form_state['values']['attributes']['src'] = $path;
+      $return['#commands'][0]['values']['attributes']['src'] = $path;
+      // clear image width & height depending on conditions...
+      $form_state['values']['attributes']['width'] = '';
+      $return['#commands'][0]['values']['attributes']['width'] = '';
+      $form_state['values']['attributes']['height'] = '';
+      $return['#commands'][0]['values']['attributes']['height'] = '';
+    }
+  }
+  return $return;
+}
+
+/**
+ * Implements hook_field_attach_view_alter.
  * add js & css for codesnippet out of CKEditor pages
  */
-function ckeditor_addon_init() {
-  $path = backdrop_get_path('module', 'ckeditor_addon') . '/js/ckeditor/plugins/codesnippet/lib/highlight/';
-  backdrop_add_js($path . 'highlight.pack.js', array('type' => 'file', 'scope' => 'footer'));
-  $inline_js = "hljs.initHighlightingOnLoad();";
-  backdrop_add_js($inline_js, array('type' => 'inline', 'scope' => 'footer'));
-  backdrop_add_css($path . 'styles/github.css', array(
-    'group' => CSS_THEME, 
-    'weight' => 142, 
-    'every_page' => FALSE,
-  ));
+function ckeditor_addon_field_attach_view_alter(&$output, $context) {
+  static $done = FALSE;
+  if ($done)
+    return;
+  list($id, $revision_id, $bundle) = entity_extract_ids($context['entity_type'], $context['entity']);
+  $fields = field_info_instances($context['entity_type'], $bundle);
+  foreach ($fields as $name => $field) {
+    if ($field['widget']['module'] == 'text' && isset($output[$name])) {
+      foreach (element_children($output[$name]) as $key) {
+        if (strpos($output[$name][$key]['#markup'], '<code class="language') !== FALSE) {
+          $path = backdrop_get_path('module', 'ckeditor_addon') . '/js/ckeditor/plugins/codesnippet/lib/highlight/';
+          backdrop_add_js($path . 'highlight.pack.js', array('type' => 'file', 'scope' => 'footer'));
+          $inline_js = "hljs.initHighlightingOnLoad();";
+          backdrop_add_js($inline_js, array('type' => 'inline', 'scope' => 'footer'));
+          backdrop_add_css($path . 'styles/github.css', array(
+            'group' => CSS_THEME, 
+            'weight' => 142, 
+            'every_page' => FALSE,
+          ));
+          $done = TRUE;
+          return;
+        }
+      }
+    }
+  }
 }
 
 /**
