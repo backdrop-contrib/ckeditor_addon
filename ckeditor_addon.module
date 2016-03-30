@@ -193,6 +193,13 @@ function ckeditor_addon_form_filter_format_editor_image_form_alter(&$form, $form
     '#wrapper_attributes' => array('class' => array('editor-image-style')),
     '#parents' => array('attributes', 'data-style'),
   );
+  // weight controls to provide right place for style
+  $form['alt']['#weight'] = 10;
+  $form['style']['#weight'] = 20;
+  $form['size']['#weight'] = 30;
+  $form['align']['#weight'] = 40;
+  $form['caption']['#weight'] = 50;
+  
   // Override filter_format_editor_dialog_save().
   $form['actions']['submit']['#ajax']['callback'] = 'ckeditor_addon_format_editor_dialog_save';
 }
