@@ -181,16 +181,15 @@ function ckeditor_addon_form_filter_format_editor_image_form_alter(&$form, $form
   if (isset($form_state['input']['editor_object'])) {
     $values = $form_state['input']['editor_object'];
   }
+  $options = array("none" => t('Original'));
+  foreach (image_styles() as $name => $style) {
+    $options[$name] = $style['label'];
+  }
   $form['style'] = array(
     '#title' => t('Style'),
-    '#type' => 'radios',
+    '#type' => 'select',
     '#default_value' => isset($values['data-style']) ? $values['data-style'] : 'none',
-    '#options' => array(
-      'none' => t('Original'),
-      'large' => t('Large'),
-      'medium' => t('Medium'),
-      'thumbnail' => t('Thumbnail'),
-    ),
+    '#options' => $options,
     '#wrapper_attributes' => array('class' => array('editor-image-style')),
     '#parents' => array('attributes', 'data-style'),
   );
@@ -217,7 +216,7 @@ function ckeditor_addon_format_editor_dialog_save($form, &$form_state) {
     if ($return['#commands'][0]['values']['attributes']['src'] != $path) {
       $form_state['values']['attributes']['src'] = $path;
       $return['#commands'][0]['values']['attributes']['src'] = $path;
-      // clear image width & height depending on conditions...
+      // clear image width & height if style changed
       $form_state['values']['attributes']['width'] = '';
       $return['#commands'][0]['values']['attributes']['width'] = '';
       $form_state['values']['attributes']['height'] = '';
