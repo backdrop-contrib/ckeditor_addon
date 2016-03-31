@@ -14,6 +14,7 @@ Upgrade to a custom built CKEditor 4.5.5
 * The save button !
 * A backdrop compliant implementation of the CKEditor uploadimage plugin, for direct upload
 * Codemirror and Codesnippet plugins
+* **New!** Image Styles integration
 
 Hopefully, the bugs will be fixed in Backdrop 1.4, but this project aims to stay as a template for customizing CKEditor integration.
 
