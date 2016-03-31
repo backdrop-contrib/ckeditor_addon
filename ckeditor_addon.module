@@ -211,24 +211,26 @@ function ckeditor_addon_format_editor_dialog_save($form, &$form_state) {
   $return = filter_format_editor_dialog_save($form, $form_state);
   if (isset($return['#commands'][0]['values']['attributes']['data-file-id'])) {
     $fid = $return['#commands'][0]['values']['attributes']['data-file-id'];
-    $style_name = $return['#commands'][0]['values']['attributes']['data-style'];
+    if (!empty($fid)) {
+      $style_name = $return['#commands'][0]['values']['attributes']['data-style'];
 
-    $file = file_load($fid);
-    $path = ($style_name == 'none') ? file_create_url($file->uri) : image_style_url($style_name, $file->uri);
+      $file = file_load($fid);
+      $path = ($style_name == 'none') ? file_create_url($file->uri) : image_style_url($style_name, $file->uri);
 
-    if ($return['#commands'][0]['values']['attributes']['src'] != $path) {
-      $form_state['values']['attributes']['src'] = $path;
-      $return['#commands'][0]['values']['attributes']['src'] = $path;
-      // clear image width & height if style has changed, but not size.
-      // questionable...
-      if ($form['style']['#default_value'] != 'none'
-        && $form_state['values']['attributes']['data-style'] != $form['style']['#default_value']
-        && $form_state['values']['attributes']['width'] == $form['size']['width']['#default_value']
-        && $form_state['values']['attributes']['height'] == $form['size']['height']['#default_value']) {
-          $form_state['values']['attributes']['width'] = '';
-          $return['#commands'][0]['values']['attributes']['width'] = '';
-          $form_state['values']['attributes']['height'] = '';
-          $return['#commands'][0]['values']['attributes']['height'] = '';
+      if ($return['#commands'][0]['values']['attributes']['src'] != $path) {
+        $form_state['values']['attributes']['src'] = $path;
+        $return['#commands'][0]['values']['attributes']['src'] = $path;
+        // clear image width & height if style has changed, but not size.
+        // questionable...
+        if ($form['style']['#default_value'] != 'none'
+          && $form_state['values']['attributes']['data-style'] != $form['style']['#default_value']
+          && $form_state['values']['attributes']['width'] == $form['size']['width']['#default_value']
+          && $form_state['values']['attributes']['height'] == $form['size']['height']['#default_value']) {
+            $form_state['values']['attributes']['width'] = '';
+            $return['#commands'][0]['values']['attributes']['width'] = '';
+            $form_state['values']['attributes']['height'] = '';
+            $return['#commands'][0]['values']['attributes']['height'] = '';
+        }
       }
     }
   }
@@ -272,6 +274,7 @@ function ckeditor_addon_field_attach_view_alter(&$output, $context) {
  * Once was "Advanced options."
  */
 function ckeditor_addon_ckeditor_settings_alter(&$config, $format) {
+  $config['extraPlugins'] .= ',codemirror';
   $config['codeSnippet_theme'] = 'Github';
   $config['format_tags'] = 'p;h2;h3;h4;h5;h6;pre;address;div';
 	$config['specialChars'] = array(

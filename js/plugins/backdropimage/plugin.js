@@ -74,9 +74,20 @@
         // the element is already correct. We only need to update the element's
         // data-file-id attribute.
         widgetDefinition.downcast = function (element) {
-          element.attributes['data-file-id'] = this.data['data-file-id'];
-          element.attributes['data-style'] = this.data['data-style'];
-console.log('downcast ' + this.data['data-file-id']);
+        //element.attributes['data-file-id'] = this.data['data-file-id'];
+          if (this.data['data-file-id'] && this.data['data-file-id'] != '') {
+            element.attributes['data-file-id'] = this.data['data-file-id'];
+          }
+          else if (element.attributes['data-file-id']) {
+            delete element.attributes['data-file-id'];
+          }
+        //element.attributes['data-style'] = this.data['data-style'];
+          if (this.data['data-style'] && this.data['data-style'] != 'none') {
+            element.attributes['data-style'] = this.data['data-style'];
+          }
+          else if (element.attributes['data-style']) {
+            delete element.attributes['data-style'];
+          }
         };
 
         // We want to upcast <img> elements to a DOM structure required by the
@@ -92,9 +103,18 @@ console.log('downcast ' + this.data['data-file-id']);
           }
 
           // Parse the data-file-id attribute.
-          data['data-file-id'] = element.attributes['data-file-id'];
-          data['data-style'] = element.attributes['data-style'];
-console.log('upcast ' + data['data-file-id']);
+          if (element.attributes['data-file-id']) {
+            data['data-file-id'] = element.attributes['data-file-id'];
+          }
+          else {
+            data['data-file-id'] = null;
+          }
+          if (element.attributes['data-style']) {
+            data['data-style'] = element.attributes['data-style'];
+          }
+          else {
+            data['data-style'] = 'none';
+          }
           return element;
         };
 

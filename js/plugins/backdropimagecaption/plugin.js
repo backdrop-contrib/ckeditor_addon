@@ -93,6 +93,12 @@
           else if (attrs['data-file-id']) {
             delete attrs['data-file-id'];
           }
+          if (this.data['data-style'] && this.data['data-style'] != 'none') {
+            attrs['data-style'] = this.data['data-style'];
+          }
+          else if (attrs['data-style']) {
+            delete attrs['data-style'];
+          }
 
           // CKEditor seems to apply the caption class to downcast elements, which
           // we do not want. Make sure that the caption class doesn't end up in
@@ -154,6 +160,8 @@
           }
           data['data-file-id'] = attrs['data-file-id'];
           delete attrs['data-file-id'];
+          data['data-style'] = attrs['data-style'];
+          delete attrs['data-style'];
 
           if (captionFilterEnabled) {
             // Unwrap from <p> wrapper created by HTML parser for a captioned
