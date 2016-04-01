@@ -18,7 +18,7 @@
       }
 
       editor.on('mode', function (evt) {
-        if (editor.mode == 'wysiwyg') {
+        if (editor.mode == 'wysiwyg' && editor.commands.maximize.state != 1) {
           // Simply set auto height with div wysiwyg.
           var editable = editor.editable();
           if (editable.isInline()) {
