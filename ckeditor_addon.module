@@ -247,6 +247,15 @@ function ckeditor_addon_form_filter_format_editor_link_form_alter(&$form, $form_
 
   $form['attributes']['href']['#weight'] = 0;
 
+  $form['target'] = array(
+    '#title' => t('Open in new window'),
+    '#type' => 'checkbox',
+    '#return_value' => '_blank',
+    '#default_value' => isset($values['target']) ? $values['target'] : FALSE,
+    '#element_validate' => array('_editor_advanced_link_target_validate'),
+    '#parents' => array('attributes', 'target'),
+  );
+
   $form['attributes']['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
@@ -284,6 +293,18 @@ function ckeditor_addon_form_filter_format_editor_link_form_alter(&$form, $form_
     '#parents' => array('attributes', 'rel'),
   );
 
+}
+
+/**
+ * "target" element validator.
+ *
+ * Clears the value if empty to avoid target="0" to be added to the link.
+ */
+function _editor_advanced_link_target_validate($element, $form_state, $form) {
+  $attributes = $form_state['values']['attributes'];
+  $attributes = array_filter($attributes);
+  $form_state['values']['attributes'] = $attributes;
+  //TODO: Also fix plugin's downcast.
 }
 
 /**

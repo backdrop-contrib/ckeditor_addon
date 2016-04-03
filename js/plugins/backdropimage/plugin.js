@@ -88,6 +88,17 @@
           else if (element.attributes['data-style']) {
             delete element.attributes['data-style'];
           }
+
+          // Clean up empty link attributes.
+          if (this.data.link) {
+            $.each(this.data.link, function(key, value) {
+              if (value === "") {
+                delete element.parent.attributes[key];
+                delete this;
+              }
+            });
+          }
+
         };
 
         // We want to upcast <img> elements to a DOM structure required by the
