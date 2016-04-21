@@ -285,7 +285,11 @@
             title: data.dialogTitle,
             dialogClass: 'editor-image-dialog'
           };
-          Backdrop.ckeditor.openDialog(editor, editor.config.backdrop.imageDialogUrl + '/' + editor.config.backdrop.format, data.existingValues, data.saveCallback, dialogSettings);
+          var url = editor.config.backdrop.imageDialogUrl;
+          if (url.indexOf('?token=') < 0) {
+            url += '/' + editor.config.backdrop.format;
+          }
+          Backdrop.ckeditor.openDialog(editor, url, data.existingValues, data.saveCallback, dialogSettings);
         }
       });
 

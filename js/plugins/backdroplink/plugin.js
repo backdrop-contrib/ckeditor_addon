@@ -135,7 +135,11 @@
           };
 
           // Open the dialog for the edit form.
-          Backdrop.ckeditor.openDialog(editor, editor.config.backdrop.linkDialogUrl + '/' + editor.config.backdrop.format, existingValues, saveCallback, dialogSettings);
+          var url = editor.config.backdrop.linkDialogUrl;
+          if (url.indexOf('?token=') < 0) {
+            url += '/' + editor.config.backdrop.format;
+          }
+          Backdrop.ckeditor.openDialog(editor, url, existingValues, saveCallback, dialogSettings);
         }
       });
       editor.addCommand('backdropunlink', {
