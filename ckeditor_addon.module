@@ -374,7 +374,6 @@ function ckeditor_addon_ckeditor_settings_alter(&$config, $format) {
     $done = true;
   }
 
-  $config['skin'] = 'moonocolor';
   $config['extraPlugins'] .= ',codemirror';
   $config['codeSnippet_theme'] = 'Github';
   $config['format_tags'] = 'p;h2;h3;h4;h5;h6;pre;address;div';
