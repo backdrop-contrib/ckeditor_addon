@@ -354,6 +354,27 @@ function ckeditor_addon_field_attach_view_alter(&$output, $context) {
  * Once was "Advanced options."
  */
 function ckeditor_addon_ckeditor_settings_alter(&$config, $format) {
+  static $done = false;
+  // this is called for each format
+  if (!$done) {
+    // Pass Backdrop's JS cache-busting string via inline script along to CKEditor.
+    // (using behaviors would be too late)
+    $query_string = !defined('MAINTENANCE_MODE') ? state_get('css_js_query_string', '0') : '';
+    $inline_js = '(function($) {
+  $(document).ready(function () {
+    if (typeof CKEDITOR !== "undefined") {';
+    $inline_js .= '
+      CKEDITOR.timestamp = "'.$query_string.'";';
+    $inline_js .= '
+    }
+  });
+}(jQuery));
+';
+    backdrop_add_js($inline_js, array('type' => 'inline'));
+    $done = true;
+  }
+
+  $config['skin'] = 'moonocolor';
   $config['extraPlugins'] .= ',codemirror';
   $config['codeSnippet_theme'] = 'Github';
   $config['format_tags'] = 'p;h2;h3;h4;h5;h6;pre;address;div';
