@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Enhancements and additional plugins for CKEditor.
+ */
 
 /**
  * Implements hook_library_alter().
@@ -188,7 +192,7 @@ function ckeditor_addon_form_filter_format_editor_image_form_alter(&$form, $form
   $form['size']['#weight'] = 30;
   $form['align']['#weight'] = 40;
   $form['caption']['#weight'] = 50;
-  
+
   // Override filter_format_editor_dialog_save().
   $form['actions']['submit']['#ajax']['callback'] = 'ckeditor_addon_format_editor_dialog_save';
 }
@@ -336,8 +340,8 @@ function ckeditor_addon_field_attach_view_alter(&$output, $context) {
           $inline_js = "hljs.initHighlightingOnLoad();";
           backdrop_add_js($inline_js, array('type' => 'inline', 'scope' => 'footer'));
           backdrop_add_css($path . 'styles/github.css', array(
-            'group' => CSS_THEME, 
-            'weight' => 142, 
+            'group' => CSS_THEME,
+            'weight' => 142,
             'every_page' => FALSE,
           ));
           $done = TRUE;
@@ -395,6 +399,6 @@ function ckeditor_addon_ckeditor_settings_alter(&$config, $format) {
 		'&Pi;', '&Psi;', '&Rho;', '&Sigma;', '&Tau;', '&Theta;', '&Upsilon;', '&Xi;', '&Zeta;', '&alpha;', '&beta;', '&chi;', '&delta;', '&epsilon;', '&eta;',
 		'&gamma;', '&iota;', '&kappa;', '&lambda;', '&mu;', '&nu;', '&omega;', '&omicron;', '&phi;', '&pi;', '&piv;', '&psi;', '&rho;', '&sigma;', '&sigmaf;',
 		'&tau;', '&theta;', '&thetasym;', '&upsih;', '&upsilon;', '&xi;', '&zeta;', '&crarr;', '&darr;', '&dArr;', '&harr;', '&hArr;', '&larr;', '&lArr;', '&rarr;',
-		'&rArr;', '&uarr;', '&uArr;', '&clubs;', '&diams;', '&hearts;', '&spades;', '&loz;'        
+		'&rArr;', '&uarr;', '&uArr;', '&clubs;', '&diams;', '&hearts;', '&spades;', '&loz;'
 	);
 }

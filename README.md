@@ -1,27 +1,71 @@
-# CKEditor addon
-Freedom, fixes, and enhancements to Backdrop core CKEditor
+CKEditor Addon
+===============
 
-Backdrop 1.2 has jailed CKEditor in core, with critical bugs, reduced functionality, and loss of customization possibility.
+This project contains enhancements to the Backdrop core CKEditor integration,
+and serves as a template for customizing CKEditor integration.
 
-## Upgrade
-Upgrade to a custom built CKEditor 4.5.5
+### Additional CKEditor Plugins included
 
-## Fixes
-* Add a link to an image
-* Restore Anchor functionality (via `id` attribute)
+* The save button
+* Codemirror plugin
+* Codesnippet plugin
+* Uploadimage plugin (also provided by Backdrop core)
+* Link plugin (replaced by Backdrop core)
+  - Anchor functionality (via `id` attribute)
+  - Additional Link Attributes
+    * `title` (for tooltips)
+    * `class` and `rel` (for lightboxes)
+    * `id` (to define anchors)
+  - Image Styles integration (also provided by backdrop core)
 
-## Additions
-* The save button !
-* A backdrop compliant implementation of the CKEditor uploadimage plugin, for direct upload
-* Codemirror and Codesnippet plugins
 
-## Enhancements
-* Image Styles integration
-* The Link plugin supports Link Attributes
-  * title (for tooltips)
-  * class and rel (for lightboxes)
-  * and id (to define anchors))
+Security Advisory
+-----------------
 
-Hopefully, the bugs will be fixed in Backdrop 1.4, but this project aims to stay as a template for customizing CKEditor integration.
+**This module contains a known security vulnerability. Use at your own risk.**
+See https://github.com/backdrop-contrib/ckeditor_addon/issues/8
 
-There is no UI, just regular Backdrop hooks.
+
+Requirements
+------------
+
+This module requires that the following core modules are also enabled:
+
+ * CKeditor
+
+
+Installation
+------------
+
+- Install this module using the official Backdrop CMS instructions at
+  https://backdropcms.org/guide/modules.
+
+
+Documentation
+-------------
+
+Additional documentation is located in the Wiki:
+https://github.com/backdrop-contrib/ckeditor_plugin/wiki/Documentation.
+
+Issues
+------
+
+Bugs and Feature requests should be reported in the Issue Queue:
+https://github.com/backdrop-contrib/ckeditor_plugin/issues.
+
+Current Maintainers
+-------------------
+
+- Abandoned.
+
+
+Credits
+-------
+
+- Originally written for Backdrop by [gifad](https://github.com/gifad).
+
+License
+-------
+
+This project is GPL v2 software.
+See the LICENSE.txt file in this directory for complete text.
